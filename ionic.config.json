@@ -1,0 +1,7 @@
+{
+  "name": "vibing-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
