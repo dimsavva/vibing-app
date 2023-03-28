@@ -4,7 +4,13 @@ const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
   appName: 'vibing-app',
   webDir: 'www',
-  bundledWebRuntime: false
+  bundledWebRuntime: false,
+  cordova: {},
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 0,
+    },
+  },
 };
 
 export default config;

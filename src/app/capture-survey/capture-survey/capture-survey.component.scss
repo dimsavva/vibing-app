@@ -1,0 +1,67 @@
+.form-field {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+  }
+  ion-grid {
+    margin-top: 1rem;
+  }
+  
+  ion-thumbnail {
+    --size: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+  
+  ion-thumbnail img {
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .remove-image-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 1.5rem;
+    color: #ff0000;
+    cursor: pointer;
+  }
+  .info-card {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  
+    h2,
+    h3 {
+      margin: 0;
+      font-weight: 600;
+    }
+  
+    h3 {
+      margin-top: 8px;
+    }
+  }
+  .summary-title {
+    margin: 16px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #3c3c3c;
+  }
+  
+  .centered-fab {
+    transform: translate(0%, -65%);
+  }
+
+  ion-toolbar {
+    position: relative;
+  }
+  
+  .centered-title {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
