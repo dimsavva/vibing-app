@@ -1,4 +1,5 @@
 import { CapacitorConfig } from '@capacitor/cli';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
@@ -7,6 +8,9 @@ const config: CapacitorConfig = {
   bundledWebRuntime: false,
   cordova: {},
   plugins: {
+    ScreenOrientation: {
+      web: ScreenOrientation,
+    },
     SplashScreen: {
       launchShowDuration: 0,
     },

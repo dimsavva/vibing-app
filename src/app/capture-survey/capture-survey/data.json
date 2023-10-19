@@ -1,0 +1,296 @@
+{
+    "data":[
+       {
+          "client":"Polofields Crossing",
+          "address":"Polofields Drive, Waterfall",
+          "inspectionDate":"September 2022",
+          "sections":[
+             {
+                "description":"Entrance and driveway",
+                "images":[
+                   "https://fastly.picsum.photos/id/0/5000/3333.jpg?hmac=_j6ghY5fCfSD6tvtcV74zXivkJSPIfR9B8w34XeQmvU",
+                   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA"
+                ],
+                "questions":[
+                   {
+                      "question":"Is the entrance cleand?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Question 2",
+                      "answer":""
+                   }
+                ],
+                "additionalComments":" Entrance and driveway section contains a set of questions related to the cleanliness and maintenance of the entrance and driveway area. The questions include whether the entrance is clean, whether the lighting is in good order, whether the signage is clean and secure, and whether the driveway is clear of debris. The answers to these questions have been randomly generated, along with relevant comments and remedial actions where applicable. The section serves as a checklist to ensure that the entrance and driveway area is well-maintained and presents a positive first impression to visitors."
+             },
+             {
+                "description":"Communal passages",
+                "images":[
+                   "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY",
+                   "https://fastly.picsum.photos/id/15/2500/1667.jpg?hmac=Lv03D1Y3AsZ9L2tMMC1KQZekBVaQSDc1waqJ54IHvo4"
+                ],
+                "questions":[
+                   {
+                      "question":"Are the communal passages clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the pillars clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are seating areas and benches clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the area clean of cigarette butts?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the paved walkway clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the tiles in good order and clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are grout lines clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the fire equipment duct clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the water feature clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the water feature pumps and filters in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the water feature illumination in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are water feature spouts clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are water feature spouts spreading water effectively?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the surface and surrounding areas clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the signage clean and secure?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are balustrades and handrails clean and secure?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Have bins been emptied?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the skirtings in good condition?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the ATM clean and in order?",
+                      "answer":""
+                   }
+                ],
+                "additionalComments":""
+             },
+             {
+                "description":"Toilet facilities",
+                "images":[
+                   "https://fastly.picsum.photos/id/0/5000/3333.jpg?hmac=_j6ghY5fCfSD6tvtcV74zXivkJSPIfR9B8w34XeQmvU",
+                   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
+                   "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY",
+                   "https://fastly.picsum.photos/id/15/2500/1667.jpg?hmac=Lv03D1Y3AsZ9L2tMMC1KQZekBVaQSDc1waqJ54IHvo4"
+                ],
+                "questions":[
+                   {
+                      "question":"Is the signage clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the service ducts clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the ceilings clean and in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the plastered walls clean and in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the tiled walls clean and in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the tiled floors clean and in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the passages clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the grout lines clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the sanitary bins clean and in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Do the sanitary bins have liners?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are hand dryers clean and in working order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the soap dispensers stocked, clean and in working order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the faucets clean and in working order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the toilet bowls clean and in working order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the urinals clean and in working order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Do the urinals all have mats?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the air freshener dispenser in good order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the toilet roll dispensers clean and in good order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the toilet seats clean and in good order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the Geberit clean and in working order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the flushing mechanisms working?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the doors and locking mechanisms working?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the staff checklist completed?",
+                      "answer":""
+                   }
+                ],
+                "additionalComments":"The Toilet facilities section contains a set of questions related to the cleanliness and maintenance of the toilet facilities. The questions include whether the toilets and urinals are clean and functioning properly, whether the soap dispensers and toilet roll dispensers are clean and in good order, and whether the doors and locking mechanisms are working properly. The answers to these questions have been randomly generated, along with relevant comments and remedial actions where applicable. The section serves as a checklist to ensure that the toilet facilities are well-maintained and hygienic for users."
+             },
+             {
+                "description":"Back passages",
+                "images":[
+                   "https://fastly.picsum.photos/id/0/5000/3333.jpg?hmac=_j6ghY5fCfSD6tvtcV74zXivkJSPIfR9B8w34XeQmvU",
+                   "https://fastly.picsum.photos/id/28/4928/3264.jpg?hmac=GnYF-RnBUg44PFfU5pcw_Qs0ReOyStdnZ8MtQWJqTfA",
+                   "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY",
+                   "https://fastly.picsum.photos/id/15/2500/1667.jpg?hmac=Lv03D1Y3AsZ9L2tMMC1KQZekBVaQSDc1waqJ54IHvo4"
+                ],
+                "questions":[
+                   {
+                      "question":"Is the staff checklist completed?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the ceilings in good order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are all the doors in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are all the floors in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the soap dispensers in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the refuse bins in order?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are there any items stored in the area?",
+                      "answer":""
+                   }
+                ],
+                "additionalComments":""
+             },
+             {
+                "description":"Refuse management",
+                "images":[
+                   
+                ],
+                "questions":[
+                   {
+                      "question":"Are the bins clean and placed neatly?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are bin liners been used?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the food waste been separated?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the floor tidy?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Is the drainage clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the fat traps clean?",
+                      "answer":""
+                   },
+                   {
+                      "question":"Are the tenants complying with food waste operating procedures?",
+                      "answer":""
+                   }
+                ],
+                "additionalComments":""
+             }
+          ]
+       }
+    ]
+ }

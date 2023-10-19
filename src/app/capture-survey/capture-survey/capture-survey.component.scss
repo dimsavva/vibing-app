@@ -59,9 +59,27 @@
     position: relative;
   }
   
-  .centered-title {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+
+
+  .survey-nav-buttons {
+    display: flex;
+    justify-content: space-between;
   }
+  
+  .survey-nav-button {
+    --background: #4caf50;
+    --color: #fff;
+    margin: 10px;
+    border-radius: 50%;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .survey-nav-button span {
+    margin-left: 10px;
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  

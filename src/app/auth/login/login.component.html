@@ -33,6 +33,18 @@
       >
         Login
       </ion-button>
+      <ng-container *ngIf="authenticating">
+
+        <div style="text-align: center;">        authenticating...
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="error">
+        <div style="text-align: center; color: red;">        User or password incorrect
+        </div>
+        
+      </ng-container>
+      
     </form>
   </div>
 </ion-content>

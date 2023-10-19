@@ -1,195 +1,275 @@
 <ion-header [translucent]="true">
-
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button icon="home" defaultHref="/home"></ion-back-button>
+      <ion-button routerLink="/home" routerDirection="back">
+        <ion-icon slot="start" name="home"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-title class="centered-title">Capture Survey</ion-title>
-  </ion-toolbar></ion-header>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToSections()">
+        <ion-icon
+          *ngIf="selectedSection != null"
+          name="chevron-back"
+          slot="icon-only"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="centered-title">
+      
+      <ng-container *ngIf="selectedCustomer === null && selectedSite === null"> 
+        Select Client
+      </ng-container>
+
+      <ng-container *ngIf="selectedCustomer !== null && selectedSite === null">
+        Select Site
+      </ng-container>
+      <ng-container *ngIf="selectedCustomer !== null && selectedSite !== null">
+        Capture Survey
+      </ng-container>
+    </ion-title> </ion-toolbar
+></ion-header>
 
 <ion-content [fullscreen]="true">
   <!-- Show clients if no client is selected -->
-  <ng-container *ngIf="selectedClient === null">
+  <ng-container *ngIf="selectedCustomer === null">
     <ion-list>
       <ion-item *ngFor="let client of clients" (click)="selectClient(client)">
-        <ion-label>{{ client.name }}</ion-label>
+        <ion-label>{{ client.customerName }}</ion-label>
       </ion-item>
     </ion-list>
   </ng-container>
 
   <!-- Show sites if a client is selected but no site is selected -->
-<ng-container *ngIf="selectedClient !== null && selectedSite === null">
-  <ion-list>
-    <ion-item *ngFor="let site of selectedClient.sites" (click)="selectSite(site)">
-      <ion-label>{{ site }}</ion-label>
-    </ion-item>
-  </ion-list>
-
-  <ion-button expand="block" (click)="selectedClient = null">Back to Clients</ion-button>
-</ng-container>
-
-<ng-container *ngIf="selectedClient !== null && selectedSite !== null">
-  <!-- Show selected client and site if both are selected -->
-<ng-container *ngIf="selectedClient !== null && selectedSite !== null">
- <ion-card class="info-card">
-    <ion-card-content>
-      <h2>Client: {{ selectedClient.name }}</h2>
-      <h3>Site: {{ selectedSite }}</h3>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Existing code for sections and questions -->
-</ng-container>
-  <ng-container *ngIf="currentSection === null">
-
+  <ng-container *ngIf="selectedCustomer !== null && selectedSite === null">
     <ion-list>
-      <ion-item *ngFor="let section of sections; let i = index" (click)="selectSection(section)">
-        <ion-label>
-          <h2>{{ section.name }}</h2>
-          <p>Answered: {{ answeredQuestions(section) }}/{{ section.questions.length }}</p>
-        </ion-label>
-        <ion-icon slot="end" [name]="sectionCompleted(section) ? 'checkmark-circle' : 'close-circle'" [color]="sectionCompleted(section) ? 'success' : 'danger'"></ion-icon>
+      <ion-item
+        *ngFor="let site of selectedCustomer.sites"
+        (click)="selectSite(site)"
+      >
+        <ion-label>{{ site.siteName }}</ion-label>
       </ion-item>
-      <ng-container *ngIf="allSectionsCompleted()">
-        <h2 class="summary-title">Summary</h2>
-        <ion-list>
-          <ion-item *ngFor="let section of sections">
-            <ion-label>
-              <h3>{{ section.name }}</h3>
-              <p>Answered: {{ answeredQuestions(section) }}/{{ section.questions.length }}</p>
-              <ion-list>
-                <ng-container *ngFor="let question of section.questions">
-                  <ion-item>
-                    <ion-label>
-                      <p><strong>Q:</strong> {{ question.text }}</p>
-                      <p><strong>A:</strong> {{ question.selectedAnswer ?? '' }}</p>
-                      <p><strong>Comments:</strong> {{ question.comments }}</p>
-                      <p><strong>Remedial Actions:</strong> {{ question.remedialActions }}</p>
-                    </ion-label>
-                  </ion-item>
-                </ng-container>
-              </ion-list>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-      </ng-container>
     </ion-list>
-  </ng-container>
 
-  <ng-container *ngIf="currentSection !== null">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>{{ currentSection.name }}</ion-card-title>
-        <ion-card-subtitle>{{
-          currentSection.questions[currentQuestionIndex].text
-        }}</ion-card-subtitle>
-      </ion-card-header>
-      <!-- ... -->
-      <ion-card-content>
-        <ion-list>
-          <ion-radio-group
-            [(ngModel)]="
-              currentSection.questions[currentQuestionIndex].selectedAnswer
-            "
-          >
-            <ion-item lines="none"
-              *ngFor="
-                let choice of currentSection.questions[currentQuestionIndex]
-                  .choices
-              "
-              (click)="
-                selectAnswer(
-                  currentSection.questions[currentQuestionIndex],
-                  choice
-                )
-              "
-            >
-              <ion-label>{{ choice }}</ion-label>
-              <ion-radio slot="start" [value]="choice"></ion-radio>
-            </ion-item>
-          </ion-radio-group>
-        </ion-list>
-        <ion-item>
-          <ion-label position="stacked">Comments</ion-label>
-          <ion-textarea
-            [(ngModel)]="
-              currentSection.questions[currentQuestionIndex].comments
-            "
-            placeholder="Enter your comments here"
-          ></ion-textarea>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked">Remedial Actions</ion-label>
-          <ion-textarea
-            [(ngModel)]="
-              currentSection.questions[currentQuestionIndex].remedialActions
-            "
-            placeholder="Enter remedial actions here"
-          ></ion-textarea>
-        </ion-item>
-
-        <!-- <ion-button expand="block" (click)="takePicture()"
-          >Take Picture</ion-button
-        > -->
-
-        <ion-grid>
-          <ion-row>
-            <ion-col
-              size="4"
-              *ngFor="
-                let photo of currentSection.questions[currentQuestionIndex]
-                  .photos;
-                let i = index
-              "
-            >
-              <ion-thumbnail>
-                <img
-                  [src]="sanitizeImageUrl(photo.webviewPath)"
-                  (click)="addImageComment(i)"
-                />
-              </ion-thumbnail>
-              <ion-icon
-                name="close-circle"
-                class="remove-image-icon"
-                (click)="removeImage(i)"
-              ></ion-icon>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-      <!-- ... -->
-    </ion-card>
-
-    <ion-buttons>
-      <ion-button
-        (click)="goToPreviousQuestion()"
-        [disabled]="currentQuestionIndex === 0"
-        >Previous</ion-button
-      >
-      <ion-button
-        (click)="goToNextQuestion()"
-        [disabled]="
-          currentQuestionIndex === currentSection.questions.length - 1
-        "
-        >Next</ion-button
-      >
-    </ion-buttons>
-
-    <ion-button expand="block" (click)="currentSection = null"
-      >Back to Sections</ion-button
+    <ion-button expand="block" (click)="selectedCustomer = null"
+      >Back to Clients</ion-button
     >
   </ng-container>
-</ng-container>
 
+  <ng-container *ngIf="selectedCustomer !== null && selectedSite !== null">
+    <!-- Show selected client and site if both are selected -->
 
+    <ng-container *ngIf="selectedSection === null">
+      <ion-list>
+        <ion-item
+          *ngFor="let section of sections; let i = index"
+          (click)="onSectionClick(section)"
+        >
+          <ion-label>
+            <h2>{{ section.name }}</h2>
+            <p>
+              Answered: {{ answeredQuestions(section) }}/{{
+                section.inspectionQuestions.length
+              }}
+            </p>
+          </ion-label>
+          <ion-icon
+            slot="end"
+            [name]="
+              sectionCompleted(section) ? 'checkmark-circle' : 'close-circle'
+            "
+            [color]="sectionCompleted(section) ? 'success' : 'danger'"
+          ></ion-icon>
+        </ion-item>
+        <ion-button
+          [disabled]="uploading"
+          (click)="completeSurvey()"
+          expand="block"
+          >{{ uploading ? "Uploading" : "Complete" }}</ion-button
+        >
+        <ng-container>
+          <h2 class="summary-title">Summary</h2>
+          <ion-list>
+            <ion-item *ngFor="let section of getCompletedSections()">
+              <ion-label>
+                <h3>{{ section.name }}</h3>
+                <p>
+                  Answered: {{ answeredQuestions(section) }}/{{
+                    section.inspectionQuestions.length
+                  }}
+                </p>
+                <ion-list>
+                  <ng-container
+                    *ngFor="let question of section.inspectionQuestions"
+                  >
+                    <ion-item>
+                      <ion-label>
+                        <p><strong>Q:</strong> {{ question.question }}</p>
+                        <p><strong>A:</strong> {{ question.answer }}</p>
+                      </ion-label>
+                    </ion-item>
+                  </ng-container>
+                </ion-list>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col
+                      size="4"
+                      *ngFor="
+                        let photo of getSectionImage(section);
+                        let i = index
+                      "
+                    >
+                      <ion-thumbnail>
+                        <img
+                          style="height: 100px"
+                          [src]="sanitizeImageUrl(photo.webviewPath)"
+                          (click)="addImageComment(section, i)"
+                        />
+                      </ion-thumbnail>
+                      <ion-icon
+                        name="close-circle"
+                        class="remove-image-icon"
+                        (click)="removeImage(section, i)"
+                      ></ion-icon>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <ion-label>
+                        <h3>Comments</h3>
+                        {{ section.additionalComments }}
+                      </ion-label>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ng-container>
+      </ion-list>
+    </ng-container>
 
-  <ng-container>  <ion-fab class="centered-fab" vertical="bottom" horizontal="center" edge slot="fixed">
-    <ion-fab-button>
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab></ng-container>
-  
+    <ng-container *ngIf="selectedSection !== null">
+      <ion-content>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ selectedSection.name }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-label>
+              <h2>{{ selectedCustomer.customerName }}</h2>
+              <p>{{ selectedSite.siteName }}</p>
+            </ion-label>
+          </ion-card-content>
+        </ion-card>
+        <ion-card
+          *ngFor="
+            let question of selectedSection.inspectionQuestions;
+            let i = index
+          "
+        >
+          <ion-card-header>
+            <ion-card-title>{{ question.question }}</ion-card-title>
+          </ion-card-header>
+          <!-- ... -->
+          <ion-card-content>
+            <ion-list>
+              <ion-radio-group [(ngModel)]="question.answer">
+                <ion-item
+                  lines="none"
+                  *ngFor="let choice of choices"
+                  (click)="selectAnswer(question, choice)"
+                >
+                  <ion-label>{{ choice }}</ion-label>
+                  <ion-radio slot="start" [value]="choice"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-list>
+          </ion-card-content>
 
-  
+          <!-- ... -->
+        </ion-card>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Comments</ion-card-title>
+          </ion-card-header>
+          <!-- ... -->
+          <ion-card-content>
+            <ion-textarea
+              spellcheck="true"
+              rows="5"
+              [(ngModel)]="selectedSection.additionalComments"
+              placeholder="Enter your comments here"
+            ></ion-textarea>
+          </ion-card-content>
+        </ion-card>
+        <ion-card>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12"> </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col
+                  size="4"
+                  *ngFor="
+                    let photo of getSectionImage(selectedSection);
+                    let i = index
+                  "
+                >
+                  <ion-thumbnail>
+                    <img
+                      style="height: 100px"
+                      [src]="sanitizeImageUrl(photo.webviewPath)"
+                      (click)="addImageComment(selectedSection, i)"
+                    />
+                  </ion-thumbnail>
+                  <ion-icon
+                    name="close-circle"
+                    class="remove-image-icon"
+                    (click)="removeImage(selectedSection, i)"
+                  ></ion-icon>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="12">
+                  <ion-button (click)="goToSections()" expand="block"
+                    >Back to Overview</ion-button
+                  >
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="12">
+                  <br />
+                  <br />
+                  <br />
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-container>
+  </ng-container>
+
+  <ng-container>
+    <ion-fab
+      class="centered-fab"
+      vertical="bottom"
+      horizontal="center"
+      edge
+      slot="fixed"
+    >
+      <ion-fab-button *ngIf="selectedSection != null">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list side="top">
+        <ion-fab-button (click)="takePicture()">
+          <ion-icon name="camera"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button (click)="addComment()">
+          <ion-icon name="chatbubble"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab>
+  </ng-container>
 </ion-content>

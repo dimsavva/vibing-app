@@ -13,25 +13,34 @@ export class LoginComponent  implements OnInit {
     email: '',
     password: '',
   };
-
+  authenticating: boolean = false;
+  error :boolean = false;
   constructor(private router: Router, private authService: AuthService) {} // Inject AuthService
   ngOnInit() {
   }
 
   onSubmit() {
-    this.router.navigate(['/home']); // Or another route after successful login
 
-    return; // Remove this line after testing
     if (this.user.email && this.user.password) {
+
+      this.authenticating = true;
       this.authService.login(this.user.email, this.user.password).subscribe(
         (response) => {
           console.log('Authentication successful:', response);
           localStorage.setItem('auth_token', response.result.accessToken);
+          localStorage.setItem('userId', response.result.userId);
+
           this.router.navigate(['/home']); // Or another route after successful login
         },
         (error) => {
           console.error('Authentication failed:', error);
           // Handle the error, for example, show a message to the user
+          this.authenticating = false;
+
+          this.error = true;
+        },
+        () => {
+          this.authenticating = false;
         }
       );
     } else {

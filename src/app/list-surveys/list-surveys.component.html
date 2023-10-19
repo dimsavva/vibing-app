@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button routerLink="/home" routerDirection="back">
+        <ion-icon slot="start" name="home"></ion-icon>
+      </ion-button>    </ion-buttons>
+
+    <ion-title class="centered-title">
+      List Surveys
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item-sliding *ngFor="let survey of surveys; let i = index">
+    <ion-item>
+      <ion-label>
+        <h2>Survey {{ i + 1 }}</h2>
+        <p>Client: {{ survey.customer.customerName }}</p>
+        <p>Site: {{ survey.site.siteName }}</p>
+      </ion-label>    
+      <ion-badge *ngIf="survey.uploaded" color="success">Uploaded</ion-badge>
+  <ion-badge *ngIf="!survey.uploaded" color="warning">Not Uploaded</ion-badge>
+
+    </ion-item>
+    <ion-item-options side="end">
+      <ion-item-option color="primary" (click)="editSurvey(survey)">Edit</ion-item-option>
+      <ion-item-option color="danger" (click)="deleteSurvey(i)">Delete</ion-item-option>
+    </ion-item-options>
+  </ion-item-sliding>
+</ion-content>

@@ -12,11 +12,15 @@ import { AuthModule } from './auth/auth.module';
 import { HttpClientModule } from '@angular/common/http'; // Add this import
 import { SharedModule } from './shared/shared.module';
 import { CaptureSurveyModule } from './capture-survey/capture-survey.module'; // Add this import
-import { Camera } from '@capacitor/camera';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { ListSurveysComponent } from './list-surveys/list-surveys.component';
+import { SettingsComponent } from './settings/settings.component';
+import { FormsModule } from '@angular/forms';
+import { ApiService } from './services/api.service';
+import { SharedService } from './services/shared.service';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ListSurveysComponent, SettingsComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -27,6 +31,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     AuthModule,
     SharedModule,
     CaptureSurveyModule,
+    FormsModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
@@ -36,7 +41,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 
   
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, ApiService,SharedService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

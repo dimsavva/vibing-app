@@ -10,7 +10,7 @@ ion-content {
 }
 
 ion-grid {
-  padding: 16px;
+  padding: 8px;
 }
 
 ion-card {
@@ -20,7 +20,7 @@ ion-card {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 16px;
+  padding: 8px;
   height: 100%; // Full height of the ion-col
   color: #4caf50; // Green text color
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Add a subtle box-shadow
@@ -39,4 +39,6 @@ ion-icon {
 
 ion-card-title {
   font-size: 0.8rem; // Reduce the title font size
+  color: #2e7d2f;
+  font-weight: bold;
 }

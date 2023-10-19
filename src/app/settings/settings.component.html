@@ -1,0 +1,25 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button routerLink="/home" routerDirection="back">
+        <ion-icon slot="start" name="home"></ion-icon>
+      </ion-button>    </ion-buttons>
+
+    <ion-title class="centered-title">
+      Settings
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-item>
+      <ion-label>Sync Wifi Only</ion-label>
+      <ion-toggle [(ngModel)]="syncWifiOnly" (ionChange)="toggleWifiOnly($event)"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" color="danger" (click)="clearCompletedSurveys()">
+    Clear Completed Surveys
+  </ion-button>
+</ion-content>

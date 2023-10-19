@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { ListSurveysComponent } from './list-surveys/list-surveys.component';
+import { SettingsComponent } from './settings/settings.component';
 import { SplashComponent } from './splash/splash.component'; // Add this import
 
 const routes: Routes = [
@@ -20,6 +22,14 @@ const routes: Routes = [
   {
     path: 'capture-survey',
     loadChildren: () => import('./capture-survey/capture-survey.module').then( m => m.CaptureSurveyModule)
+  },
+  {
+    path: 'list-surveys',
+    component: ListSurveysComponent,
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
   },
 ];
 
