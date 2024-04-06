@@ -1,6 +1,6 @@
 export interface Question {
-    questionId: number;
+    questionId: string;
     question: string;
-    answer: string;
+    answer: boolean;
     answered: boolean;
   }

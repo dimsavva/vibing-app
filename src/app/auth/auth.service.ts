@@ -7,27 +7,45 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = "https://localhost:44354"; // Ensure this is pointing to the correct API endpoint
 
   constructor(private http: HttpClient) {}
 
-  login(email: string, password: string, tenantName: string = 'Vibing'): Observable<any> {
-   
-    //add heqaders 
-    const headers = new HttpHeaders({
-      'abp.tenantid': '2',
-      
-    });
-    
-   // setcookie
-    document.cookie = "Abp.TenantId=2" + ";path=/";
-    const body = {
-      usernameOrEmailAddress: email,
+  private getLoginData(username: string, password: string): string {
+    const formData = {
+      grant_type: 'password',
+      scope: "offline_access openid profile email phone",
+      username: username,
       password: password,
-      rememberClient: false,
-    };
-    
+      client_id: "VibingGardens_App",
+      redirectUri: "http://localhost:8100/",
+      responseType: "code"
+      };
 
-    return this.http.post(`${this.apiUrl}/TokenAuth/Authenticate`, body, { headers });
+    return Object.entries(formData)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+      .join('&');
+  }
+
+  login(username: string, password: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+
+    const body = this.getLoginData(username, password);
+
+    return this.http.post(`${this.apiUrl}/connect/token`, body, { headers });
+  }
+
+  logout(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/account/logout`);
+  }
+
+  getTenant(tenantName: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/abp/multi-tenancy/tenants/by-name/${tenantName}`);
+  }
+
+  getTenantById(tenantId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/abp/multi-tenancy/tenants/by-id/${tenantId}`);
   }
 }

@@ -4,7 +4,12 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:44311/api',
+  apiUrl: 'https://localhost:44354/api',
+  oAuthConfig: {
+    scope: 'api',
+    clientId: 'angular',
+    clientSecret: '',
+  },
 };
 
 /*

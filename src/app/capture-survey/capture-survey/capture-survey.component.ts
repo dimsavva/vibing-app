@@ -30,7 +30,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
   isLastQuestion: boolean = false;
 
   currentQuestionIndex: number = 0;
-  choices = ['Yes', 'No'];
+  choices = [true, false];
   clients: Customer[] = [];
   selectedCustomer: Customer | null = null;
   selectedSite: Site | null = null;
@@ -52,7 +52,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
     private apiService: ApiService
   ) {}
 
-  ngOnInit() {    
+  ngOnInit() {
 
     const syncData = this.sharedService.getData();
     this.syncData = syncData;
@@ -80,7 +80,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
       screen.orientation.lock('landscape');
     }
   }
-  
+
   async unlockOrientation() {
     const info = await Device.getInfo();
     if (info.platform === 'android' || info.platform === 'ios') {
@@ -91,10 +91,12 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
   resetData() {
 
 
-    this.clients = this.syncData.result.customers;
+    this.clients = this.syncData.customers;
+
+    console.log(this.syncData);
 
     const sectionsData =
-      this.syncData.result.inpectionTemplates[0].inspectionSections;
+      this.syncData.inpectionTemplates[0].inspectionSections;
 
     this.sections = sectionsData.map((section: any) => {
       return {
@@ -106,7 +108,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
             return {
               questionId: question.questionId,
               question: question.question,
-              answer: '',
+              answer: question.answer,
             };
           }
         ),
@@ -137,7 +139,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
     this.currentQuestionIndex = 0;
   }
 
-  selectAnswer(question: Question, answer: any) {
+  selectAnswer(question: Question, answer: boolean) {
     question.answer = answer;
     question.answered = true;
     this.saveSurvey();
@@ -173,7 +175,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
       this.currentQuestionIndex--;
     }
   }
- 
+
   async takePicture() {
      const photo = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
@@ -182,8 +184,8 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
       allowEditing: false,
     });
 
- 
-  
+
+
     const newImage: SectionPhoto = {
       filepath: photo.webPath!,
       webviewPath: photo.webPath!,
@@ -216,50 +218,50 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
 
   async uploadFiles(surveyData : SurveyData) {
     const uploadPromises: any[] = [];
-  
+
     surveyData.sections.forEach((section) => {
       section.photos?.forEach((photo) => {
         const uploadPromise = new Promise<void>(async (resolve) => {
           console.log(photo);
           const fileName = photo.id + '.jpg';
-  
+
           await this.saveBlobToDevice(photo.filepath, fileName!);
-  
+
           const imageDataUrl = await this.readFileAsDataUrl(fileName);
 
           console.log(fileName);
           console.log(imageDataUrl)
-  
+
           this.apiService.uploadFile(imageDataUrl, fileName).subscribe((res) => {
             console.log('upload success');
             photo.uploaded = true;
             resolve();
           });
         });
-  
+
         uploadPromises.push(uploadPromise);
       });
     });
-  
+
     // Wait for all file uploads to complete
     await Promise.all(uploadPromises);
 
     return surveyData
-  
+
     // Execute more code here when all files have been uploaded
   }
 
   async processImage(imageUrl: string) {
     const imageElement = document.createElement('img');
     imageElement.src = imageUrl;
-  
+
     const cropper = new Cropper(imageElement, {
       aspectRatio: 16 / 9,
       crop(event) {
         console.log(event.detail);
       },
     });
-  
+
     // Use `cropper.getCroppedCanvas()` to get the cropped image as a canvas.
     // You can then convert this canvas to a data URL or a Blob for further use.
   }
@@ -270,9 +272,9 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
 
     // Save the JSON string to local storage with a unique key (e.g., using a timestamp)
 
- 
+
     this.uploading = true;
-    
+
     this.uploadFiles(surveyData).then((data) => {
       console.log('All files have been uploaded.');
       this.uploading = false;
@@ -286,15 +288,16 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
 
 
       this.saveSurvey();
-  
+
       this.selectedSection = null;
       this.selectedCustomer = null;
       this.selectedSite = null;
       this.resetData();
 
-       this.apiService.submitSurveyData(JSON.parse(surveyDataString)).subscribe((res) => {
+       this.apiService.submitSurveyData(data).subscribe((res) => {
+        console.log('upload success');
        });
-  
+
       // Navigate back to the home screen or another appropriate screen
       // (Assuming you have NavController imported and injected in the constructor)
       this.router.navigate(['/home']); // Assuming the home screen is at the root path
@@ -303,7 +306,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
     });
 
 
- 
+
 
   }
 
@@ -402,25 +405,25 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
     await alert.present();
   }
 
- 
+
   async fetchBlobAsArrayBuffer(blobUrl: string): Promise<ArrayBuffer> {
     const response = await fetch(blobUrl);
     const blob = await response.blob();
     return new Response(blob).arrayBuffer();
   }
-  
+
    arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
     const bytes = new Uint8Array(arrayBuffer);
     const len = bytes.byteLength;
     let binary = '';
-  
+
     for (let i = 0; i < len; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
-  
+
     return btoa(binary);
   }
-  
+
   async  saveBlobToDevice(blobUrl: string, fileName: string): Promise<void> {
     try {
       const resizeConfig = {
@@ -436,7 +439,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
 
       try {
 
-        
+
 
        const imageBlob = await this.blobURLToBlob(blobUrl);
 
@@ -453,16 +456,16 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
       }
       const arrayBuffer = await this.fetchBlobAsArrayBuffer(rezizedblobUrl);
       const base64Data = this.arrayBufferToBase64(arrayBuffer);
-  
 
-      
+
+
       await Filesystem.writeFile({
         path: `${fileName}`,
         data: base64Data,
         directory: Directory.Documents,
         recursive: true,
       });
-  
+
       console.log('File saved successfully');
     } catch (error) {
       console.error('Error saving file:', error);
@@ -471,11 +474,11 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
    dataUrlToBlob(dataUrl: string): Blob {
     const binary = atob(dataUrl.split(',')[1]);
     const array = new Uint8Array(binary.length);
-  
+
     for (let i = 0; i < binary.length; i++) {
       array[i] = binary.charCodeAt(i);
     }
-  
+
     return new Blob([array], { type: 'image/jpeg' });
   }
 
@@ -490,11 +493,11 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
 
   async blobURLToBlob(blobURL: string): Promise<Blob> {
     const response = await fetch(blobURL);
-  
+
     if (!response.ok) {
       throw new Error(`Failed to fetch Blob from URL: ${blobURL}`);
     }
-  
+
     const blob = await response.blob();
     return blob;
   }
@@ -506,7 +509,7 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
     });
     return file;
   }
-  
+
 
   async addImageComment(section: Section, index: number) {
     const alert = await this.alertController.create({

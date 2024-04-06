@@ -15,8 +15,8 @@
       </ion-button>
     </ion-buttons>
     <ion-title class="centered-title">
-      
-      <ng-container *ngIf="selectedCustomer === null && selectedSite === null"> 
+
+      <ng-container *ngIf="selectedCustomer === null && selectedSite === null">
         Select Client
       </ng-container>
 
@@ -179,7 +179,7 @@
                   *ngFor="let choice of choices"
                   (click)="selectAnswer(question, choice)"
                 >
-                  <ion-label>{{ choice }}</ion-label>
+                  <ion-label>{{ choice ? "Yes" : "No" }}</ion-label>
                   <ion-radio slot="start" [value]="choice"></ion-radio>
                 </ion-item>
               </ion-radio-group>

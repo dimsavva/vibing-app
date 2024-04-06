@@ -27,8 +27,8 @@ export class LoginComponent  implements OnInit {
       this.authService.login(this.user.email, this.user.password).subscribe(
         (response) => {
           console.log('Authentication successful:', response);
-          localStorage.setItem('auth_token', response.result.accessToken);
-          localStorage.setItem('userId', response.result.userId);
+          localStorage.setItem('auth_token', response.access_token);
+          localStorage.setItem('userId', response.id_token);
 
           this.router.navigate(['/home']); // Or another route after successful login
         },

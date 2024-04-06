@@ -16,14 +16,14 @@ export class ApiService {
 
   sync(): Observable<any> {
 
-    //set auth headers 
+    //set auth headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
     });
 
     return this.http.get<any>(
-      `${API_URL}/services/app/MobileSync/GetSync`,
+      `${API_URL}/app/mobile-sync/sync`,
       { headers },
     );
   }
@@ -33,7 +33,7 @@ export class ApiService {
     fileName: string,
   ): Observable<string> {
     return this.http.post<string>(
-      `${API_URL}/services/app/MobileSync/UploadItemImage`,
+      `${API_URL}/app/mobile-sync/upload-item-image`,
       {
         base64Str:  base64Str.replace('data:image/jpeg;base64,', ''),
         fileName: fileName,
@@ -45,17 +45,17 @@ export class ApiService {
   }
   submitSurveyData(
     data: any,
-     
+
   ): Observable<string> {
     return this.http.post<string>(
-      `${API_URL}/services/app/MobileSync/SubmitSurveyData`,
+      `${API_URL}/app/mobile-sync/submit-survey-data`,
       data,
       {
         responseType: 'json',
       }
     );
   }
-  
+
 
   getUser(userId : number): Observable<any> {
     const headers = {
@@ -64,9 +64,9 @@ export class ApiService {
       'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
     };
     return this.http.get<any>(
-      `${API_URL}/services/app/User/Get?Id=${userId}`, { headers }
+      `${API_URL}/app/User/Get?Id=${userId}`, { headers }
     );
   }
 }
- 
-  
+
+
