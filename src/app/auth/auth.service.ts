@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = "https://localhost:44354"; // Ensure this is pointing to the correct API endpoint
+  private apiUrl = "https://api.vibingapp.co.za"; // Ensure this is pointing to the correct API endpoint
 
   constructor(private http: HttpClient) {}
 

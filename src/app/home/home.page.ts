@@ -40,13 +40,13 @@ export class HomePage implements OnInit, OnDestroy {
     const userId = localStorage.getItem('userId') || '';
     const userIdentifier = parseInt(userId, 10);
 
-    this.apiService
-      .getUser(userIdentifier)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        console.log(data.result.emailAddress);
-        localStorage.setItem('emailAddress', data.result.emailAddress);
-      });
+    // this.apiService
+    //   .getUser(userIdentifier)
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((data: any) => {
+    //     console.log(data.result.emailAddress);
+    //     localStorage.setItem('emailAddress', data.result.emailAddress);
+    //   });
   }
 
   ngOnDestroy(): void {
