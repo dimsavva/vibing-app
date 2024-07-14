@@ -5,7 +5,7 @@ import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AfterViewInit } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
-import { ApiService } from 'src/app/services/api.service';
+import { ApiService, AudioDataDto } from 'src/app/services/api.service';
 import { Customer } from 'src/app/shared/models/customer';
 import { Question } from 'src/app/shared/models/question';
 import { Section } from 'src/app/shared/models/section';
@@ -24,6 +24,10 @@ import { readAndCompressImage } from 'browser-image-resizer';
   styleUrls: ['./capture-survey.component.scss'],
 })
 export class CaptureSurveyComponent implements OnInit, AfterViewInit {
+  isRecording = false;
+  mediaRecorder: MediaRecorder | undefined;
+  chunks: Blob[] = [];
+
   sections: Section[] = [];
   surveyData: SurveyData[] = [];
   isLastQuestion: boolean = false;
@@ -443,4 +447,65 @@ export class CaptureSurveyComponent implements OnInit, AfterViewInit {
   allSectionsCompleted(): boolean {
     return this.sections.every((section) => this.sectionCompleted(section));
   }
+
+  toggleRecording() {
+    if (this.isRecording) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
+    }
+  }
+  
+  startRecording() {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(stream => {
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.mediaRecorder.start();
+        this.mediaRecorder.addEventListener('dataavailable', event => {
+          this.chunks.push(event.data);
+        });
+        this.mediaRecorder.addEventListener('stop', () => {
+          const audioBlob = new Blob(this.chunks, { type: 'audio/webm' });
+          this.chunks = [];
+          this.processAudioBlob(audioBlob);
+        });
+        this.isRecording = true;
+      })
+      .catch(error => {
+        console.error('Error accessing microphone:', error);
+      });
+  }
+  
+  stopRecording() {
+    if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+      this.mediaRecorder.stop();
+      this.isRecording = false;
+    }
+  }
+  
+  processAudioBlob(audioBlob: Blob) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const audioData = new Uint8Array(reader.result as ArrayBuffer);
+      const base64String = btoa(String.fromCharCode.apply(null, [...audioData]));
+      const audioDataDto: AudioDataDto = {
+        audioData: base64String
+      };
+  
+      this.apiService.transcribeAudio(audioDataDto).subscribe(transcription => {
+        console.log('Transcription:', transcription);
+        if (this.selectedSection) {
+          if (this.selectedSection.additionalComments) {
+            this.selectedSection.additionalComments += ' ' + transcription;
+          } else {
+            this.selectedSection.additionalComments = transcription;
+          }
+        }
+      });
+    };
+    reader.readAsArrayBuffer(audioBlob);
+  }
+  
+
 }

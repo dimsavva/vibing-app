@@ -92,10 +92,21 @@
             <ion-card-title>Comments</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-textarea spellcheck="true" rows="5" [(ngModel)]="selectedSection.additionalComments"
-              placeholder="Enter your comments here"></ion-textarea>
+            <ion-item>
+              <ion-textarea
+                spellcheck="true"
+                rows="5"
+                [(ngModel)]="selectedSection.additionalComments"
+                placeholder="Enter your comments here"
+              ></ion-textarea>
+              <ion-button slot="end" (click)="toggleRecording()">
+                <ion-icon *ngIf="!isRecording" name="mic"></ion-icon>
+                <ion-icon *ngIf="isRecording" name="stop"></ion-icon>
+              </ion-button>
+            </ion-item>
           </ion-card-content>
         </ion-card>
+        
         <ion-card>
           <ion-card-content>
             <ion-grid>
