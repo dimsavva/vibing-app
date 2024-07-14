@@ -19,6 +19,12 @@ export class LoginComponent  implements OnInit {
   ngOnInit() {
   }
 
+
+  parseJwt (token:any) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace('-', '+').replace('_', '/');
+    return JSON.parse(window.atob(base64));
+};
   onSubmit() {
 
     if (this.user.email && this.user.password) {
@@ -29,6 +35,8 @@ export class LoginComponent  implements OnInit {
           console.log('Authentication successful:', response);
           localStorage.setItem('auth_token', response.access_token);
           localStorage.setItem('userId', response.id_token);
+          const decodedToken = this.parseJwt(response.id_token);
+          localStorage.setItem('emailAddress', decodedToken.email);
 
           this.router.navigate(['/home']); // Or another route after successful login
         },

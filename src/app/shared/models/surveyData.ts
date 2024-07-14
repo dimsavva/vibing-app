@@ -3,6 +3,7 @@ import { Section } from "./section";
 import { Site } from "./site";
 
 export interface SurveyData {
+    id: string;
     customer: Customer;
     site : Site;
     address: string;

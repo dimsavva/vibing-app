@@ -1,0 +1,2203 @@
+Directory: C:\Projects\vibing-app\src\app\auth
+-----------------
+
+Directory: C:\Projects\vibing-app\src\app\capture-survey
+-----------------
+
+Directory: C:\Projects\vibing-app\src\app\home
+-----------------
+
+Directory: C:\Projects\vibing-app\src\app\list-surveys
+-----------------
+
+Directory: C:\Projects\vibing-app\src\app\services
+-----------------
+
+Directory: C:\Projects\vibing-app\src\app\settings
+-----------------
+
+Directory: C:\Projects\vibing-app\src\app\shared
+-----------------
+
+Directory: C:\Projects\vibing-app\src\app\splash
+-----------------
+
+Directory: C:\Projects\vibing-app\src\app\tabs
+-----------------
+
+File: C:\Projects\vibing-app\src\app\app-routing.module.ts
+-----------------
+import { NgModule } from '@angular/core';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { ListSurveysComponent } from './list-surveys/list-surveys.component';
+import { SettingsComponent } from './settings/settings.component';
+import { SplashComponent } from './splash/splash.component'; // Add this import
+
+const routes: Routes = [
+  {
+    path: '',
+    component: SplashComponent, // Update this line to use the SplashComponent
+  },
+  {
+    path: 'home',
+    loadChildren: () =>
+      import('./home/home.module').then((m) => m.HomePageModule),
+  },
+  // Add this route
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+  },
+  {
+    path: 'capture-survey',
+    loadChildren: () => import('./capture-survey/capture-survey.module').then( m => m.CaptureSurveyModule)
+  },
+  {
+    path: 'list-surveys',
+    component: ListSurveysComponent,
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
+  },
+];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+  ],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+File: C:\Projects\vibing-app\src\app\app.component.html
+-----------------
+<ion-app>
+  <ion-router-outlet></ion-router-outlet>
+</ion-app>
+
+File: C:\Projects\vibing-app\src\app\app.component.spec.ts
+-----------------
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+
+import { AppComponent } from './app.component';
+
+describe('AppComponent', () => {
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
+  });
+
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+
+});
+
+File: C:\Projects\vibing-app\src\app\app.component.ts
+-----------------
+import { Component } from '@angular/core';
+import { SwUpdate } from '@angular/service-worker';
+import { Platform } from '@ionic/angular';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
+  styleUrls: ['app.component.scss'],
+})
+export class AppComponent {
+  constructor(private platform: Platform, private swUpdate: SwUpdate) {
+    if (swUpdate.isEnabled) {
+
+      swUpdate.available.subscribe((event) => {
+        console.log('current version is', event.current);
+        if (confirm('New version available. Load New Version?')) {
+          window.location.reload();
+        }
+      });
+
+      this.swUpdate.checkForUpdate();
+
+    }
+
+    this.initializeApp();
+  }
+
+  initializeApp() {
+    this.platform.ready().then(() => {
+      // Use Capacitor StatusBar plugin to set status bar style and color
+      // CapacitorStatusBar.setBackgroundColor({ color: '#4caf50' });
+    });
+  }
+}
+
+File: C:\Projects\vibing-app\src\app\app.module.ts
+-----------------
+import { NgModule, isDevMode } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouteReuseStrategy } from '@angular/router';
+
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule } from '@angular/material/button';
+import { AuthModule } from './auth/auth.module';
+import { HttpClientModule } from '@angular/common/http'; // Add this import
+import { SharedModule } from './shared/shared.module';
+import { CaptureSurveyModule } from './capture-survey/capture-survey.module'; // Add this import
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { ListSurveysComponent } from './list-surveys/list-surveys.component';
+import { SettingsComponent } from './settings/settings.component';
+import { FormsModule } from '@angular/forms';
+import { ApiService } from './services/api.service';
+import { SharedService } from './services/shared.service';
+
+@NgModule({
+  declarations: [AppComponent, ListSurveysComponent, SettingsComponent],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule, // Add HttpClientModule here
+    MatButtonModule,
+    AuthModule,
+    SharedModule,
+    CaptureSurveyModule,
+    FormsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }), // Add SharedModule here
+
+  
+  ],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, ApiService,SharedService],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+
+Directory: C:\Projects\vibing-app\src\app\auth\login
+-----------------
+
+File: C:\Projects\vibing-app\src\app\auth\auth-routing.module.ts
+-----------------
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { LoginComponent } from './login/login.component';
+
+const routes: Routes = [
+  {
+    path: 'login',
+    component: LoginComponent,
+  },
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class AuthRoutingModule { }
+
+File: C:\Projects\vibing-app\src\app\auth\auth.module.ts
+-----------------
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular'; // Add this import
+
+import { LoginComponent } from './login/login.component';
+import { AuthRoutingModule } from './auth-routing.module';
+
+
+@NgModule({
+  declarations: [LoginComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    IonicModule, // Add IonicModule here
+    AuthRoutingModule,
+
+
+  ],
+})
+export class AuthModule {}
+
+File: C:\Projects\vibing-app\src\app\auth\auth.service.spec.ts
+-----------------
+import { TestBed } from '@angular/core/testing';
+
+import { AuthService } from './auth.service';
+
+describe('AuthService', () => {
+  let service: AuthService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(AuthService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\auth\auth.service.ts
+-----------------
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private apiUrl = "https://api.vibingapp.co.za"; // Ensure this is pointing to the correct API endpoint
+
+  constructor(private http: HttpClient) {}
+
+  private getLoginData(username: string, password: string): string {
+    const formData = {
+      grant_type: 'password',
+      scope: "offline_access openid profile email phone",
+      username: username,
+      password: password,
+      client_id: "VibingGardens_App",
+      redirectUri: "http://localhost:8100/",
+      responseType: "code"
+      };
+
+    return Object.entries(formData)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+      .join('&');
+  }
+
+  login(username: string, password: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+
+    const body = this.getLoginData(username, password);
+
+    return this.http.post(`${this.apiUrl}/connect/token`, body, { headers });
+  }
+
+  logout(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/account/logout`);
+  }
+
+  getTenant(tenantName: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/abp/multi-tenancy/tenants/by-name/${tenantName}`);
+  }
+
+  getTenantById(tenantId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/abp/multi-tenancy/tenants/by-id/${tenantId}`);
+  }
+}
+
+File: C:\Projects\vibing-app\src\app\auth\login\login.component.html
+-----------------
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="login-container">
+    <img src="assets/logo.png" alt="Logo" class="logo" />
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input
+          type="email"
+          required
+          [(ngModel)]="user.email"
+          name="email"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Password</ion-label>
+        <ion-input
+          type="password"
+          required
+          [(ngModel)]="user.password"
+          name="password"
+        ></ion-input>
+      </ion-item>
+      <ion-button
+        type="submit"
+        expand="full"
+        [disabled]="!loginForm.valid"
+      >
+        Login
+      </ion-button>
+      <ng-container *ngIf="authenticating">
+
+        <div style="text-align: center;">        authenticating...
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="error">
+        <div style="text-align: center; color: red;">        User or password incorrect
+        </div>
+        
+      </ng-container>
+      
+    </form>
+  </div>
+</ion-content>
+
+File: C:\Projects\vibing-app\src\app\auth\login\login.component.spec.ts
+-----------------
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
+
+import { LoginComponent } from './login.component';
+
+describe('LoginComponent', () => {
+  let component: LoginComponent;
+  let fixture: ComponentFixture<LoginComponent>;
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [ LoginComponent ],
+      imports: [IonicModule.forRoot()]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(LoginComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\auth\login\login.component.ts
+-----------------
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+})
+export class LoginComponent  implements OnInit {
+
+  user = {
+    email: '',
+    password: '',
+  };
+  authenticating: boolean = false;
+  error :boolean = false;
+  constructor(private router: Router, private authService: AuthService) {} // Inject AuthService
+  ngOnInit() {
+  }
+
+  onSubmit() {
+
+    if (this.user.email && this.user.password) {
+
+      this.authenticating = true;
+      this.authService.login(this.user.email, this.user.password).subscribe(
+        (response) => {
+          console.log('Authentication successful:', response);
+          localStorage.setItem('auth_token', response.access_token);
+          localStorage.setItem('userId', response.id_token);
+
+          this.router.navigate(['/home']); // Or another route after successful login
+        },
+        (error) => {
+          console.error('Authentication failed:', error);
+          // Handle the error, for example, show a message to the user
+          this.authenticating = false;
+
+          this.error = true;
+        },
+        () => {
+          this.authenticating = false;
+        }
+      );
+    } else {
+      console.log('Invalid login form');
+    }
+  }
+}
+
+
+
+
+Directory: C:\Projects\vibing-app\src\app\capture-survey\capture-survey
+-----------------
+
+File: C:\Projects\vibing-app\src\app\capture-survey\capture-survey-routing.module.ts
+-----------------
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { CaptureSurveyComponent } from './capture-survey/capture-survey.component';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: CaptureSurveyComponent,
+  },
+];
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class CaptureSurveyRoutingModule { }
+
+File: C:\Projects\vibing-app\src\app\capture-survey\capture-survey.module.ts
+-----------------
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { CaptureSurveyRoutingModule } from './capture-survey-routing.module';
+import { SharedModule } from '../shared/shared.module';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { CaptureSurveyComponent } from './capture-survey/capture-survey.component';
+ 
+
+@NgModule({
+  declarations: [CaptureSurveyComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    CaptureSurveyRoutingModule,
+    SharedModule,
+    
+  ],
+  exports: []
+})
+export class CaptureSurveyModule { }
+
+File: C:\Projects\vibing-app\src\app\capture-survey\capture-survey\capture-survey.component.html
+-----------------
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button routerLink="/home" routerDirection="back">
+        <ion-icon slot="start" name="home"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToSections()">
+        <ion-icon
+          *ngIf="selectedSection !== null"
+          name="chevron-back"
+          slot="icon-only"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="centered-title">
+
+      <ng-container *ngIf="selectedCustomer === null && selectedSite === null">
+        Select Client
+      </ng-container>
+
+      <ng-container *ngIf="selectedCustomer !== null && selectedSite === null">
+        Select Site
+      </ng-container>
+      <ng-container *ngIf="selectedCustomer !== null && selectedSite !== null">
+        Capture Survey
+      </ng-container>
+    </ion-title> </ion-toolbar
+></ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Show clients if no client is selected -->
+  <ng-container *ngIf="selectedCustomer === null">
+    <ion-list>
+      <ion-item *ngFor="let client of clients" (click)="selectClient(client)">
+        <ion-label>{{ client.customerName }}</ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <!-- Show sites if a client is selected but no site is selected -->
+  <ng-container *ngIf="selectedCustomer !== null && selectedSite === null">
+    <ion-list>
+      <ion-item
+        *ngFor="let site of selectedCustomer.sites"
+        (click)="selectSite(site)"
+      >
+        <ion-label>{{ site.siteName }}</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" (click)="selectedCustomer = null"
+      >Back to Clients</ion-button
+    >
+  </ng-container>
+
+  <ng-container *ngIf="selectedCustomer !== null && selectedSite !== null">
+    <!-- Show selected client and site if both are selected -->
+
+    <ng-container *ngIf="selectedSection === null">
+      <ion-list>
+        <ion-item
+          *ngFor="let section of sections; let i = index"
+          (click)="onSectionClick(section)"
+        >
+          <ion-label>
+            <h2>{{ section.name }}</h2>
+            <p>
+              Answered: {{ answeredQuestions(section) }}/{{
+                section.inspectionQuestions.length
+              }}
+            </p>
+          </ion-label>
+          <ion-icon
+            slot="end"
+            [name]="
+              sectionCompleted(section) ? 'checkmark-circle' : 'close-circle'
+            "
+            [color]="sectionCompleted(section) ? 'success' : 'danger'"
+          ></ion-icon>
+        </ion-item>
+        <ion-button
+        [disabled]="uploading || !allSectionsCompleted()"
+        (click)="completeSurvey()"
+          expand="block"
+          >{{ uploading ? "Uploading" : "Complete" }}</ion-button
+        >
+        <ng-container>
+          <h2 class="summary-title">Summary</h2>
+          <ion-list>
+            <ion-item *ngFor="let section of getCompletedSections()">
+              <ion-label>
+                <h3>{{ section.name }}</h3>
+                <p>
+                  Answered: {{ answeredQuestions(section) }}/{{
+                    section.inspectionQuestions.length
+                  }}
+                </p>
+                <ion-list>
+                  <ng-container
+                    *ngFor="let question of section.inspectionQuestions"
+                  >
+                    <ion-item>
+                      <ion-label>
+                        <p><strong>Q:</strong> {{ question.question }}</p>
+                        <p><strong>A:</strong> {{ question.answer }}</p>
+                      </ion-label>
+                    </ion-item>
+                  </ng-container>
+                </ion-list>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col
+                      size="4"
+                      *ngFor="
+                        let photo of getSectionImage(section);
+                        let i = index
+                      "
+                    >
+                      <ion-thumbnail>
+                        <img
+                          style="height: 100px"
+                          [src]="sanitizeImageUrl(photo.webviewPath)"
+                          (click)="addImageComment(section, i)"
+                        />
+                      </ion-thumbnail>
+                      <ion-icon
+                        name="close-circle"
+                        class="remove-image-icon"
+                        (click)="removeImage(section, i)"
+                      ></ion-icon>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <ion-label>
+                        <h3>Comments</h3>
+                        {{ section.additionalComments }}
+                      </ion-label>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ng-container>
+      </ion-list>
+    </ng-container>
+
+    <ng-container *ngIf="selectedSection !== null">
+      <ion-content>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ selectedSection.name }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-label>
+              <h2>{{ selectedCustomer.customerName }}</h2>
+              <p>{{ selectedSite.siteName }}</p>
+            </ion-label>
+          </ion-card-content>
+        </ion-card>
+        <ion-card
+          *ngFor="
+            let question of selectedSection.inspectionQuestions;
+            let i = index
+          "
+        >
+          <ion-card-header>
+            <ion-card-title>{{ question.question }}</ion-card-title>
+          </ion-card-header>
+          <!-- ... -->
+          <ion-card-content>
+            <ion-list>
+              <ion-radio-group [(ngModel)]="question.answer">
+                <ion-item
+                  lines="none"
+                  *ngFor="let choice of choices"
+                  (click)="selectAnswer(question, choice)"
+                >
+                  <ion-label>{{ choice ? "Yes" : "No" }}</ion-label>
+                  <ion-radio slot="start" [value]="choice"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-list>
+          </ion-card-content>
+
+          <!-- ... -->
+        </ion-card>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Comments</ion-card-title>
+          </ion-card-header>
+          <!-- ... -->
+          <ion-card-content>
+            <ion-textarea
+              spellcheck="true"
+              rows="5"
+              [(ngModel)]="selectedSection.additionalComments"
+              placeholder="Enter your comments here"
+            ></ion-textarea>
+          </ion-card-content>
+        </ion-card>
+        <ion-card>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12"> </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col
+                  size="4"
+                  *ngFor="
+                    let photo of getSectionImage(selectedSection);
+                    let i = index
+                  "
+                >
+                  <ion-thumbnail>
+                    <img
+                      style="height: 100px"
+                      [src]="sanitizeImageUrl(photo.webviewPath)"
+                      (click)="addImageComment(selectedSection, i)"
+                    />
+                  </ion-thumbnail>
+                  <ion-icon
+                    name="close-circle"
+                    class="remove-image-icon"
+                    (click)="removeImage(selectedSection, i)"
+                  ></ion-icon>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="12">
+                  <ion-button (click)="goToSections()" expand="block"
+                    >Back to Overview</ion-button
+                  >
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="12">
+                  <br />
+                  <br />
+                  <br />
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-container>
+  </ng-container>
+
+  <ng-container>
+    <ion-fab
+      class="centered-fab"
+      vertical="bottom"
+      horizontal="center"
+      edge
+      slot="fixed"
+    >
+      <ion-fab-button *ngIf="selectedSection !== null">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list side="top">
+        <ion-fab-button (click)="takePicture()">
+          <ion-icon name="camera"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button (click)="addComment()">
+          <ion-icon name="chatbubble"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab>
+  </ng-container>
+</ion-content>
+
+File: C:\Projects\vibing-app\src\app\capture-survey\capture-survey\capture-survey.component.spec.ts
+-----------------
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
+
+import { CaptureSurveyComponent } from './capture-survey.component';
+
+describe('CaptureSurveyComponent', () => {
+  let component: CaptureSurveyComponent;
+  let fixture: ComponentFixture<CaptureSurveyComponent>;
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [ CaptureSurveyComponent ],
+      imports: [IonicModule.forRoot()]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(CaptureSurveyComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\capture-survey\capture-survey\capture-survey.component.ts
+-----------------
+import { Component, OnInit } from '@angular/core';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { AfterViewInit } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { ApiService } from 'src/app/services/api.service';
+import { readAndCompressImage } from 'browser-image-resizer';
+import { Customer } from 'src/app/shared/models/customer';
+import { Question } from 'src/app/shared/models/question';
+import { Section } from 'src/app/shared/models/section';
+import { Site } from 'src/app/shared/models/site';
+import { SurveyData } from 'src/app/shared/models/surveyData';
+import { SectionPhoto } from 'src/app/shared/models/photo';
+
+import { Device } from '@capacitor/device';
+import Cropper from 'cropperjs';
+import { CustomerSyncDto, MobileSyncResponseDto } from 'src/app/shared/models/models';
+
+@Component({
+  selector: 'app-capture-survey',
+  templateUrl: './capture-survey.component.html',
+  styleUrls: ['./capture-survey.component.scss'],
+})
+export class CaptureSurveyComponent implements OnInit, AfterViewInit {
+  sections: Section[] = [];
+  surveyData: SurveyData[] = [];
+  isLastQuestion: boolean = false;
+
+  currentQuestionIndex: number = 0;
+  choices = [true, false];
+  clients: CustomerSyncDto[] = [];
+  selectedCustomer: Customer | null = null;
+  selectedSite: Site | null = null;
+  selectedSection: Section | null = null;
+  selectedQuestion: Question | null = null;
+  showQuestions: boolean = false;
+  nextButtonText: string = 'Next';
+  storedSurveyId: string | null = null;
+
+  completedSection: Section[] = [];
+  syncData: MobileSyncResponseDto = {} as MobileSyncResponseDto;
+  uploading: boolean = false;
+
+  constructor(
+    private sanitizer: DomSanitizer,
+    public alertController: AlertController,
+    private router: Router,
+    private sharedService: SharedService,
+    private apiService: ApiService
+  ) {}
+
+  ngOnInit() {
+
+    const syncData = this.sharedService.getData();
+    this.syncData = syncData;
+
+    this.resetData();
+
+    const id = history.state.surveyId;
+    if (localStorage.getItem(`survey_${id}`) !== null) {
+      const survey = JSON.parse(
+        localStorage.getItem(`survey_${id}`)?.toString() || ''
+      );
+      this.storedSurveyId = id;
+      this.surveyData = survey;
+      this.sections = survey.sections;
+      this.selectedCustomer = survey.customer;
+      this.selectedSite = survey.site;
+    } else {
+      this.storedSurveyId = null;
+    }
+  }
+
+  async lockLandscapeOrientation() {
+    const info = await Device.getInfo();
+    if (info.platform === 'android' || info.platform === 'ios') {
+    //  screen.orientation.lock('landscape');
+    }
+  }
+
+  async unlockOrientation() {
+    const info = await Device.getInfo();
+    if (info.platform === 'android' || info.platform === 'ios') {
+      screen.orientation.unlock();
+    }
+  }
+
+  resetData() {
+    this.clients = this.syncData.customers;
+
+  }
+  ngAfterViewInit() {}
+
+  getCompletedSections() {
+    return this.sections.filter((section) => this.sectionCompleted(section));
+  }
+
+  getSectionImage(section: Section) {
+    return section.photos;
+  }
+  answeredQuestions(section: Section) {
+    return section.inspectionQuestions.filter(
+      (question: Question) => question.answered
+    ).length;
+  }
+
+  onSectionClick(section: Section) {
+    this.selectedSection = section;
+    this.selectedQuestion = section.inspectionQuestions[0];
+    this.showQuestions = true;
+    this.currentQuestionIndex = 0;
+  }
+
+  selectAnswer(question: Question, answer: boolean) {
+    question.answer = answer;
+    question.answered = true;
+    this.saveSurvey();
+  }
+
+  goToNextQuestion() {
+    if (
+      this.currentQuestionIndex <
+      this.selectedSection!.inspectionQuestions.length - 1
+    ) {
+      this.currentQuestionIndex++;
+    }
+    if (
+      this.currentQuestionIndex ===
+      this.selectedSection!.inspectionQuestions.length - 1
+    ) {
+      this.isLastQuestion = true;
+      this.nextButtonText = 'Submit';
+    }
+  }
+
+  goToPreviousQuestion() {
+    if (this.currentQuestionIndex > 0) {
+      this.currentQuestionIndex--;
+    }
+  }
+
+  async takePicture() {
+    const photo = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Camera,
+      quality: 100,
+      allowEditing: false,
+    });
+
+    const newImage: SectionPhoto = {
+      filepath: photo.webPath!,
+      webviewPath: photo.webPath!,
+      comment: '',
+      id: this.newGuid(),
+      uploaded: false,
+    };
+
+    console.log(newImage);
+
+    if (this.selectedSection?.photos === undefined) {
+      this.selectedSection!.photos = [];
+    }
+    this.selectedSection?.photos.push(newImage);
+  }
+  private newGuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+      /[xy]/g,
+      function (c) {
+        var r = (Math.random() * 16) | 0,
+          v = c == 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  }
+
+  sanitizeImageUrl(url: string): SafeUrl {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  }
+  removeImage(section: Section, index: number) {
+    section?.photos!.splice(index, 1);
+  }
+
+  goToSections() {
+    this.selectedSection = null;
+    this.currentQuestionIndex = 0;
+    this.isLastQuestion = false;
+    this.nextButtonText = 'Next';
+  }
+
+  async uploadFiles(surveyData: SurveyData) {
+    const uploadPromises: any[] = [];
+
+    surveyData.sections.forEach((section) => {
+      section.photos?.forEach((photo) => {
+        const uploadPromise = new Promise<void>(async (resolve) => {
+          console.log(photo);
+          const fileName = photo.id + '.jpg';
+
+          await this.saveBlobToDevice(photo.filepath, fileName!);
+
+          const imageDataUrl = await this.readFileAsDataUrl(fileName);
+
+          console.log(fileName);
+          console.log(imageDataUrl);
+
+          this.apiService.uploadFile(imageDataUrl, fileName).subscribe((res) => {
+            console.log('upload success');
+            photo.uploaded = true;
+            resolve();
+          });
+        });
+
+        uploadPromises.push(uploadPromise);
+      });
+    });
+
+    // Wait for all file uploads to complete
+    await Promise.all(uploadPromises);
+
+    return surveyData;
+
+    // Execute more code here when all files have been uploaded
+  }
+
+  async processImage(imageUrl: string) {
+    const imageElement = document.createElement('img');
+    imageElement.src = imageUrl;
+
+    const cropper = new Cropper(imageElement, {
+      aspectRatio: 16 / 9,
+      crop(event) {
+        console.log(event.detail);
+      },
+    });
+
+    // Use `cropper.getCroppedCanvas()` to get the cropped image as a canvas.
+    // You can then convert this canvas to a data URL or a Blob for further use.
+  }
+
+  async completeSurvey() {
+    let surveyData: SurveyData = this.getSurveyData();
+    // Convert the survey data object to a JSON string
+
+    // Save the JSON string to local storage with a unique key (e.g., using a timestamp)
+
+    this.uploading = true;
+
+    this.uploadFiles(surveyData)
+      .then((data) => {
+        console.log('All files have been uploaded.');
+        this.uploading = false;
+
+        surveyData = data;
+
+        console.log('uploaded');
+
+        const surveyDataString = JSON.stringify(surveyData);
+
+        this.saveSurvey();
+
+        this.selectedSection = null;
+        this.selectedCustomer = null;
+        this.selectedSite = null;
+        this.resetData();
+
+        this.apiService.submitSurveyData(data).subscribe((res) => {
+          console.log('upload success');
+        });
+
+        // Navigate back to the home screen or another appropriate screen
+        // (Assuming you have NavController imported and injected in the constructor)
+        this.router.navigate(['/home']); // Assuming the home screen is at the root path
+      })
+      .catch((error) => {
+        console.error('An error occurred during file uploads:', error);
+      });
+  }
+
+  getSurveyData(): SurveyData {
+    try {
+      const currentDate = new Date();
+      const month = currentDate.toLocaleString('default', { month: 'long' });
+      const year = currentDate.getFullYear();
+      const surveyId = this.storedSurveyId || `survey_${Date.now()}`;
+      
+      let surveyData: SurveyData = {
+        id: surveyId,
+        customer: this.selectedCustomer!,
+        site: this.selectedSite!,
+        address: '',
+        userEmail: localStorage.getItem('emailAddress') || '',
+        inspectionDate: `${month} ${year}`,
+        uploaded: false,
+        sections: this.sections.map((section) => {
+          return {
+            ...section,
+            additionalComments: section.additionalComments,
+            photos: section.photos || [],
+          };
+        }),
+      };
+      return surveyData;
+    } catch (error) {
+     // this.displayError(error, 'Getting Survey Data');
+      throw error;
+    }
+  }
+  saveSurvey() {
+    const timestamp = new Date().getTime();
+
+    let surveyData: SurveyData = this.getSurveyData();
+    const surveyDataString = JSON.stringify(surveyData);
+
+    if (this.storedSurveyId === null) {
+      const surveyId = `survey_${timestamp}`;
+
+      localStorage.setItem(surveyId, surveyDataString);
+      this.storedSurveyId = surveyId.replace('survey_', '');
+    } else {
+      localStorage.setItem(`survey_${this.storedSurveyId}`, surveyDataString);
+    }
+  }
+
+  extractGuid(blobUrl: string): string | null {
+    const guidPattern = /\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/;
+    const match = blobUrl.match(guidPattern);
+    return match ? match[1] : null;
+  }
+
+  async readFileAsDataUrl(filePath: string): Promise<string> {
+    try {
+      console.log('Reading file:', filePath);
+      const fileResult = await Filesystem.readFile({
+        path: filePath,
+        directory: Directory.Documents,
+      });
+      return `data:image/jpeg;base64,${fileResult.data}`;
+    } catch (error) {
+      console.error('Error reading file:', error);
+      throw error;
+    }
+  }
+
+  async addComment() {
+    const alert = await this.alertController.create({
+      header: 'Add Comment',
+      inputs: [
+        {
+          name: 'comment',
+          type: 'text',
+          placeholder: 'Enter your comment here',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Add',
+          handler: (data) => {
+            if (this.selectedSection) {
+              if (this.selectedSection.additionalComments) {
+                this.selectedSection.additionalComments += `\n${data.comment}`;
+              } else {
+                this.selectedSection.additionalComments = data.comment;
+              }
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async fetchBlobAsArrayBuffer(blobUrl: string): Promise<ArrayBuffer> {
+    const response = await fetch(blobUrl);
+    const blob = await response.blob();
+    return new Response(blob).arrayBuffer();
+  }
+
+  arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(arrayBuffer);
+    const len = bytes.byteLength;
+    let binary = '';
+
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+
+    return btoa(binary);
+  }
+
+  async saveBlobToDevice(blobUrl: string, fileName: string): Promise<void> {
+    try {
+      const resizeConfig = {
+        quality: 1,
+        maxWidth: 1600,
+        maxHeight: 1200,
+        autoRotate: true,
+        debug: false,
+        mimeType: 'image/png', // Set output format to PNG
+      };
+      let rezizedblobUrl = '';
+
+      try {
+        const imageBlob = await this.blobURLToBlob(blobUrl);
+
+        const blobAsFIle = this.blobToFile(imageBlob, fileName);
+
+        const resizedImageBlob = await readAndCompressImage(
+          blobAsFIle,
+          resizeConfig
+        );
+
+        rezizedblobUrl = URL.createObjectURL(resizedImageBlob);
+      } catch (error) {
+        console.error('Error resizing image:', error);
+      }
+      const arrayBuffer = await this.fetchBlobAsArrayBuffer(rezizedblobUrl);
+      const base64Data = this.arrayBufferToBase64(arrayBuffer);
+
+      await Filesystem.writeFile({
+        path: `${fileName}`,
+        data: base64Data,
+        directory: Directory.Documents,
+        recursive: true,
+      });
+
+      console.log('File saved successfully');
+    } catch (error) {
+      console.error('Error saving file:', error);
+    }
+  }
+  dataUrlToBlob(dataUrl: string): Blob {
+    const binary = atob(dataUrl.split(',')[1]);
+    const array = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++) {
+      array[i] = binary.charCodeAt(i);
+    }
+
+    return new Blob([array], { type: 'image/jpeg' });
+  }
+
+  blobToDataUrl(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async blobURLToBlob(blobURL: string): Promise<Blob> {
+    const response = await fetch(blobURL);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Blob from URL: ${blobURL}`);
+    }
+
+    const blob = await response.blob();
+    return blob;
+  }
+
+  blobToFile(blob: Blob, fileName: string): File {
+    const file = new File([blob], fileName, {
+      type: blob.type,
+      lastModified: new Date().getTime(),
+    });
+    return file;
+  }
+
+  async addImageComment(section: Section, index: number) {
+    const alert = await this.alertController.create({
+      header: 'Add Image Comment',
+      inputs: [
+        {
+          name: 'comment',
+          type: 'text',
+          placeholder: 'Enter comment',
+          value: section.photos![index].comment || '',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Save',
+          handler: (data) => {
+            section.photos![index].comment = data.comment;
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  selectClient(customer: any) {
+    this.selectedCustomer = customer;
+  }
+
+  selectSite(site: any) {
+    this.selectedSite = site;
+  }
+
+  goToHome() {
+    this.router.navigate(['/home']); // Assuming the home screen is at the root path
+  }
+
+  sectionCompleted(section: Section): boolean {
+    return section.inspectionQuestions.every(
+      (question: Question) => question.answered
+    );
+  }
+
+  allSectionsCompleted(): boolean {
+    return this.sections.every((section) => this.sectionCompleted(section));
+  }
+}
+
+File: C:\Projects\vibing-app\src\app\home\home-routing.module.ts
+-----------------
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { HomePage } from './home.page';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: HomePage,
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class HomePageRoutingModule {}
+
+File: C:\Projects\vibing-app\src\app\home\home.module.ts
+-----------------
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
+import { HomePage } from './home.page';
+
+import { HomePageRoutingModule } from './home-routing.module';
+
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    HomePageRoutingModule
+  ],
+  declarations: [HomePage]
+})
+export class HomePageModule {}
+
+File: C:\Projects\vibing-app\src\app\home\home.page.html
+-----------------
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="centered-title" >
+      Vibing v7.9.6.8
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6" *ngFor="let card of cards">
+        <ion-card (click)="onCardClick(card.id)">
+          <ion-card-header>
+            <ion-icon [name]="card.icon" size="large"></ion-icon>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-card-title>{{ card.title }}</ion-card-title>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+File: C:\Projects\vibing-app\src\app\home\home.page.spec.ts
+-----------------
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
+
+import { HomePage } from './home.page';
+
+describe('HomePage', () => {
+  let component: HomePage;
+  let fixture: ComponentFixture<HomePage>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [HomePage],
+      imports: [IonicModule.forRoot()]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(HomePage);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\home\home.page.ts
+-----------------
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Platform } from '@ionic/angular';
+import { App } from '@capacitor/app';
+import { Plugins } from '@capacitor/core';
+import { ApiService } from '../services/api.service';
+import { Subject, takeUntil } from 'rxjs';
+import { SharedService } from '../services/shared.service';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+})
+export class HomePage implements OnInit, OnDestroy {
+  cards = [
+    { id: 1, title: 'Capture Survey', icon: 'document-text-outline' },
+    { id: 2, title: 'List Surveys', icon: 'list-outline' },
+    { id: 3, title: 'Settings', icon: 'settings-outline' },
+    { id: 4, title: 'Exit', icon: 'exit-outline' },
+  ];
+
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private router: Router,
+    private platform: Platform,
+    private apiService: ApiService,
+    private sharedService: SharedService
+  ) {}
+
+  ngOnInit(): void {
+    this.apiService
+      .sync()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
+        this.sharedService.setData(data);
+      });
+
+    const userId = localStorage.getItem('userId') || '';
+    const userIdentifier = parseInt(userId, 10);
+
+    // this.apiService
+    //   .getUser(userIdentifier)
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((data: any) => {
+    //     console.log(data.result.emailAddress);
+    //     localStorage.setItem('emailAddress', data.result.emailAddress);
+    //   });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+  onButtonClick() {
+    console.log('Button clicked!');
+  }
+  onCardClick(id: number) {
+    if (id === 1) {
+      this.router.navigate(['/capture-survey']);
+    }
+    if (id === 2) {
+      this.router.navigate(['/list-surveys']);
+    }
+    if (id === 3) {
+      this.router.navigate(['/settings']);
+    }
+    if (id === 4) {
+      App.exitApp();
+    }
+  }
+
+  async exitApp() {
+    if (this.platform.is('pwa')) {
+      await App.exitApp();
+    } else {
+      window.close();
+    }
+  }
+}
+
+File: C:\Projects\vibing-app\src\app\list-surveys\list-surveys.component.html
+-----------------
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button routerLink="/home" routerDirection="back">
+        <ion-icon slot="start" name="home"></ion-icon>
+      </ion-button>    </ion-buttons>
+
+    <ion-title class="centered-title">
+      List Surveys
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item-sliding *ngFor="let survey of surveys; let i = index">
+    <ion-item>
+      <ion-label>
+        <h2>Survey {{ i + 1 }}</h2>
+        <p>Client: {{ survey.customer.customerName }}</p>
+        <p>Site: {{ survey.site.siteName }}</p>
+      </ion-label>    
+      <ion-badge *ngIf="survey.uploaded" color="success">Uploaded</ion-badge>
+  <ion-badge *ngIf="!survey.uploaded" color="warning">Not Uploaded</ion-badge>
+
+    </ion-item>
+    <ion-item-options side="end">
+      <ion-item-option color="primary" (click)="editSurvey(survey)">Edit</ion-item-option>
+      <ion-item-option color="danger" (click)="deleteSurvey(i)">Delete</ion-item-option>
+    </ion-item-options>
+  </ion-item-sliding>
+</ion-content>
+
+File: C:\Projects\vibing-app\src\app\list-surveys\list-surveys.component.spec.ts
+-----------------
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
+
+import { ListSurveysComponent } from './list-surveys.component';
+
+describe('ListSurveysComponent', () => {
+  let component: ListSurveysComponent;
+  let fixture: ComponentFixture<ListSurveysComponent>;
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [ ListSurveysComponent ],
+      imports: [IonicModule.forRoot()]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ListSurveysComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\list-surveys\list-surveys.component.ts
+-----------------
+import { Component, OnInit } from '@angular/core';
+import { NavigationExtras, Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
+import { SectionPhoto } from '../shared/models/photo';
+import { Section } from '../shared/models/section';
+
+@Component({
+  selector: 'app-list-surveys',
+  templateUrl: './list-surveys.component.html',
+  styleUrls: ['./list-surveys.component.scss'],
+})
+export class ListSurveysComponent implements OnInit {
+  surveys: any[] = [];
+
+  constructor(
+    private alertController: AlertController,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.loadSurveys();
+  }
+  loadSurveys() {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('survey_')) {
+        const storedSurvey = localStorage.getItem(key);
+        if (storedSurvey) {
+          const survey = JSON.parse(storedSurvey);
+          survey.sections as Section[];
+
+          const photoList : SectionPhoto[]= []
+          let allPhotos = survey.sections.map((section: Section) => {
+           section.photos?.map((photo: SectionPhoto) => {
+              photoList.push(photo);
+            });
+          });
+          allPhotos = photoList.filter((photo: SectionPhoto) => photo !== undefined);
+          const uploaded = allPhotos.filter((photo: SectionPhoto) => photo.uploaded).length;
+          const notUploaded = allPhotos.filter((photo: SectionPhoto) => !photo.uploaded).length;
+
+          survey.id = key.split('_')[1];
+          console.log("id",survey.id, "uploaded", uploaded, "notUploaded", notUploaded, "allPhotos", allPhotos.length);
+
+          survey.timestamp = key.split('_')[1];
+          survey.uploaded = uploaded === allPhotos.length;
+          this.surveys.push(survey);
+        }
+      }
+    }
+  }
+  async editSurvey(survey: any) {
+    // Logic for editing the survey
+
+    const extras: NavigationExtras = { state: { surveyId: survey.id } };
+    this.router.navigate(['/capture-survey'], extras);
+
+    // this.router.navigateByUrl('/capture-survey', extras);
+  }
+
+  async deleteSurvey(index: number) {
+    const alert = await this.alertController.create({
+      header: 'Confirm',
+      message: 'Are you sure you want to delete this survey?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Delete cancelled');
+          },
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            const survey = this.surveys[index];
+            console.log(`survey_${survey.timestamp}`);
+            console.log(index);
+            console.log(this.surveys);
+
+            localStorage.removeItem(`survey_${survey.timestamp}`);
+            this.surveys.splice(index, 1);
+            console.log('Survey deleted');
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+}
+
+File: C:\Projects\vibing-app\src\app\services\api.service.spec.ts
+-----------------
+import { TestBed } from '@angular/core/testing';
+
+import { ApiService } from './api.service';
+
+describe('ApiService', () => {
+  let service: ApiService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(ApiService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\services\api.service.ts
+-----------------
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+
+const API_URL = environment.apiUrl;
+
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export class ApiService {
+
+  constructor(private http: HttpClient) { }
+
+  sync(): Observable<any> {
+
+    //set auth headers
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
+    });
+
+    return this.http.get<any>(
+      `${API_URL}/app/mobile-sync/sync`,
+      { headers },
+    );
+  }
+
+  uploadFile(
+    base64Str: string,
+    fileName: string,
+  ): Observable<string> {
+    return this.http.post<string>(
+      `${API_URL}/app/mobile-sync/upload-item-image`,
+      {
+        base64Str:  base64Str.replace('data:image/jpeg;base64,', ''),
+        fileName: fileName,
+      },
+      {
+        responseType: 'json',
+      }
+    );
+  }
+  submitSurveyData(
+    data: any,
+
+  ): Observable<string> {
+    return this.http.post<string>(
+      `${API_URL}/app/mobile-sync/submit-survey-data`,
+      data,
+      {
+        responseType: 'json',
+      }
+    );
+  }
+
+
+  getUser(userId : number): Observable<any> {
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
+    };
+    return this.http.get<any>(
+      `${API_URL}/app/User/Get?Id=${userId}`, { headers }
+    );
+  }
+}
+
+
+
+File: C:\Projects\vibing-app\src\app\services\shared.service.spec.ts
+-----------------
+import { TestBed } from '@angular/core/testing';
+
+import { SharedService } from './shared.service';
+
+describe('SharedService', () => {
+  let service: SharedService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(SharedService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\services\shared.service.ts
+-----------------
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SharedService {
+
+  private data: any;
+
+
+  constructor() { 
+
+    this.data = null;
+
+  }
+
+  setData(message: any): void {
+    this.data = message;
+  }
+
+  getData(): any {
+    return this.data;
+  }
+}
+
+File: C:\Projects\vibing-app\src\app\settings\settings.component.html
+-----------------
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button routerLink="/home" routerDirection="back">
+        <ion-icon slot="start" name="home"></ion-icon>
+      </ion-button>    </ion-buttons>
+
+    <ion-title class="centered-title">
+      Settings
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-item>
+      <ion-label>Sync Wifi Only</ion-label>
+      <ion-toggle [(ngModel)]="syncWifiOnly" (ionChange)="toggleWifiOnly($event)"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" color="danger" (click)="clearCompletedSurveys()">
+    Clear Completed Surveys
+  </ion-button>
+</ion-content>
+
+File: C:\Projects\vibing-app\src\app\settings\settings.component.spec.ts
+-----------------
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
+
+import { SettingsComponent } from './settings.component';
+
+describe('SettingsComponent', () => {
+  let component: SettingsComponent;
+  let fixture: ComponentFixture<SettingsComponent>;
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [ SettingsComponent ],
+      imports: [IonicModule.forRoot()]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SettingsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\settings\settings.component.ts
+-----------------
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-settings',
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.scss'],
+})
+export class SettingsComponent implements OnInit {
+  syncWifiOnly: boolean = false;
+
+  constructor() {}
+
+  ngOnInit() {
+    // Retrieve wifionly setting from local storage
+    let wifionlySetting = localStorage.getItem('syncWifiOnly');
+    if (wifionlySetting === null) {
+      localStorage.setItem('syncWifiOnly', this.syncWifiOnly.toString());
+      wifionlySetting = 'false';
+    }
+    this.syncWifiOnly = wifionlySetting?.toString() === 'true';
+    console.log(this.syncWifiOnly);
+  }
+
+  toggleWifiOnly(event: any) {
+    localStorage.setItem('syncWifiOnly', event.detail.checked.toString());
+  }
+
+  clearCompletedSurveys() {
+    if (confirm('Are you sure you want to clear all completed surveys?')) {
+      const keys = Object.keys(localStorage);
+      keys.forEach((key) => {
+        if (
+          key.startsWith('survey_') &&
+          JSON.parse(localStorage.getItem(key) || '{}').uploaded
+        ) {
+          localStorage.removeItem(key);
+        }
+      });
+      alert('Completed surveys cleared.');
+    }
+  }
+}
+
+Directory: C:\Projects\vibing-app\src\app\shared\models
+-----------------
+
+File: C:\Projects\vibing-app\src\app\shared\shared.module.ts
+-----------------
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatOptionModule } from '@angular/material/core'; // Add this import
+import { IonicModule } from '@ionic/angular';
+import { MatCardModule } from '@angular/material/card';
+
+@NgModule({
+  declarations: [],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatCardModule,
+    IonicModule
+  ],
+  exports: [
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatCardModule
+  ],
+})
+export class SharedModule {}
+
+File: C:\Projects\vibing-app\src\app\shared\models\customer.ts
+-----------------
+import { Site } from "./site";
+
+export interface Customer {
+    customerId: number;
+    customerName: string;
+    emailAddress: string;
+    sites: Site[];
+  }
+
+File: C:\Projects\vibing-app\src\app\shared\models\models.ts
+-----------------
+export interface SurveyResponseDto {
+    data: SurveyResponseData[];
+  }
+  
+  export interface SurveyResponseData {
+    customerId: string;
+    client: string;
+    siteId: string;
+    site: string;
+    address: string;
+    inspectionDate: Date;
+    sections: SurveyResponseSection[];
+  }
+  
+  export interface SurveyResponseSection {
+    surveySectionId: string;
+    description: string;
+    images: string[];
+    questions: SurveyResponseQuestion[];
+    additionalComments: string;
+  }
+  
+  export interface SurveyResponseQuestion {
+    questionId: string;
+    question: string;
+    answer: boolean;
+    answered: boolean;
+  }
+  
+  export interface MobileSyncResponseDto {
+    customers: CustomerSyncDto[];
+    inpectionTemplates: InpectionTemplateSyncDto[];
+  }
+  
+  export interface CustomerSyncDto {
+    customerId: string;
+    customerName: string;
+    emailAddress: string;
+    templateId: string;
+    sites: SiteSyncDto[];
+  }
+  
+  export interface SiteSyncDto {
+    siteId: string;
+    siteName: string;
+    inspectionTemplateId: string;
+  }
+  
+  export interface InpectionTemplateSyncDto {
+    inpectionTemplateId: string;
+    name: string;
+    inspectionSections: SectionSyncDto[];
+  }
+  
+  export interface SectionSyncDto {
+    sectionId: string;
+    name: string;
+    inspectionQuestions: QuestionSyncDto[];
+  }
+  
+  export interface QuestionSyncDto {
+    questionId: string;
+    question: string;
+  }
+
+File: C:\Projects\vibing-app\src\app\shared\models\photo.ts
+-----------------
+export interface SectionPhoto {
+    filepath: string;
+    webviewPath: string;
+    id : string;
+    uploaded: boolean;
+    comment: string;
+  }
+  
+
+File: C:\Projects\vibing-app\src\app\shared\models\question.ts
+-----------------
+export interface Question {
+    questionId: string;
+    question: string;
+    answer: boolean;
+    answered: boolean;
+  }
+
+File: C:\Projects\vibing-app\src\app\shared\models\section.ts
+-----------------
+import { SectionPhoto } from "./photo";
+import { Question } from "./question";
+
+export interface Section {
+    sectionId: number;
+    name: string;
+    images: string[];
+    inspectionQuestions: Question[];
+    additionalComments: string;
+    photos?: SectionPhoto[];
+  }
+  
+
+File: C:\Projects\vibing-app\src\app\shared\models\site.ts
+-----------------
+export interface Site {
+    siteId: number;
+    siteName: string;
+  }
+
+File: C:\Projects\vibing-app\src\app\shared\models\surveyData.ts
+-----------------
+import { Customer } from "./customer";
+import { Section } from "./section";
+import { Site } from "./site";
+
+export interface SurveyData {
+    id: string;
+    customer: Customer;
+    site : Site;
+    address: string;
+    userEmail : string;
+    inspectionDate: string;
+    uploaded: boolean;
+    sections: Section[];
+  }
+
+File: C:\Projects\vibing-app\src\app\splash\splash.component.html
+-----------------
+<div class="splash-container">
+  <img src="assets/logo.png" alt="Logo" class="logo" />
+
+  <p>Loading...</p>
+</div>
+
+File: C:\Projects\vibing-app\src\app\splash\splash.component.spec.ts
+-----------------
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
+
+import { SplashComponent } from './splash.component';
+
+describe('SplashComponent', () => {
+  let component: SplashComponent;
+  let fixture: ComponentFixture<SplashComponent>;
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [ SplashComponent ],
+      imports: [IonicModule.forRoot()]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SplashComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\splash\splash.component.ts
+-----------------
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router'; // Add this import
+
+@Component({
+  selector: 'app-splash',
+  templateUrl: './splash.component.html',
+  styleUrls: ['./splash.component.scss'],
+})
+export class SplashComponent implements OnInit {
+  constructor(private router: Router) {} // Inject the Router
+
+  ngOnInit() {
+    setTimeout(() => {
+      this.router.navigate(['/auth/login']);
+    }, 3000);
+  }
+}
+
+File: C:\Projects\vibing-app\src\app\tabs\tabs.component.html
+-----------------
+<ion-tabs>
+
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button>
+      <ion-icon name="home"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button>
+      <ion-icon name="person"></ion-icon>
+      <ion-label>Profile</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button>
+      <ion-icon name="settings"></ion-icon>
+      <ion-label>Settings</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+
+</ion-tabs>
+
+File: C:\Projects\vibing-app\src\app\tabs\tabs.component.spec.ts
+-----------------
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
+
+import { TabsComponent } from './tabs.component';
+
+describe('TabsComponent', () => {
+  let component: TabsComponent;
+  let fixture: ComponentFixture<TabsComponent>;
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [ TabsComponent ],
+      imports: [IonicModule.forRoot()]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TabsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+File: C:\Projects\vibing-app\src\app\tabs\tabs.component.ts
+-----------------
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-tabs',
+  templateUrl: './tabs.component.html',
+  styleUrls: ['./tabs.component.scss'],
+})
+export class TabsComponent  implements OnInit {
+
+  constructor() { }
+
+  ngOnInit() {}
+
+}
+
